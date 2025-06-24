@@ -14,7 +14,7 @@ ext {
     junitVersion = '5.10.2'
     springVersion = '5.3.37'
     lombokVersion = '1.18.30'
-    springSecurityVersion='5.8.13'
+    springSecurityVersion = '5.8.13'
 }
 
 sourceCompatibility = '1.17'
@@ -31,12 +31,6 @@ dependencies {
             { exclude group: 'commons-logging', module: 'commons-logging' }
     implementation "org.springframework:spring-webmvc:${springVersion}"
     implementation 'javax.inject:javax.inject:1'
-
-    // spring security
-    implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
-    implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
-    implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
-    implementation("org.springframework.security:spring-security-taglibs:${springSecurityVersion}")
 
     // AOP
     implementation 'org.aspectj:aspectjrt:1.9.20'
@@ -74,6 +68,12 @@ dependencies {
 
     // Jackson - Json 처리
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+
+    // spring security
+    implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
+    implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
+    implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
+    implementation("org.springframework.security:spring-security-taglibs:${springSecurityVersion}")
 
     // 데이터베이스
     implementation 'com.mysql:mysql-connector-j:8.1.0'
