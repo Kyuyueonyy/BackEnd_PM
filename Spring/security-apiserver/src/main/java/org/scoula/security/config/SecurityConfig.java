@@ -3,9 +3,12 @@ package org.scoula.security.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
+import org.scoula.security.filter.JwtUsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,7 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,6 +36,16 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    // 커스텀 인증 필터 추가
+    @Autowired
+    private JwtUsernamePasswordAuthenticationFilter jwtUsernamePasswordAuthenticationFilter;
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        log.info("configure .........................................");
+//        // inMemoryAuthentication -> 메모리상에 user정보를 임의로 등록
+//        auth.inMemoryAuthentication()
+//                .withUser("admin")
 
     // 문자셋 필터
     public CharacterEncodingFilter encodingFilter() {
@@ -49,7 +62,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(encodingFilter(), CsrfFilter.class);
+        //http.addFilterBefore(encodingFilter(), CsrfFilter.class);
+        http
+                // API 로그인 인증 필터 추가 (기존 UsernamePasswordAuthenticationFilter 앞에 배치)
+                .addFilterBefore(jwtUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         //  HTTP 보안 설정
         http.httpBasic().disable()      // 기본 HTTP 인증 비활성화
@@ -57,6 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()      // 폼 로그인 비활성화 (JSON 기반 API 사용)
                 .sessionManagement()        // 세션 관리 설정
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // 무상태 모드
+
 
         // 경로별, 접근 권한 설정
         http.authorizeRequests()
@@ -69,11 +86,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/security/login") // 로그인 폼에서 제출되는 URL(POST)
                 .defaultSuccessUrl("/");
 
-        http.logout()
-                .logoutUrl("/security/logout") // -> Spring Security에서 로그아웃 요청을 받는 POST API
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSION-ID")
-                .logoutSuccessUrl("/security/logout"); // GET logout 페이지로 전환
 
         http.sessionManagement()
                 /*회원 1명당 세션 1개 유지*/
@@ -81,19 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .maxSessionsPreventsLogin(false)           // 새 로그인시 기존 세션 만료
                 .expiredUrl("/security/login?expired");    // 세션 만료시 리다이렉트
 
-        http.rememberMe()
-                .key("uniqueAndSecret")                    // 🔑 암호화 키
-                .tokenValiditySeconds(86400)               // ⏰ 24시간 유효
-                .userDetailsService(userDetailsService);   // 👤 사용자 정보 서비스
-
     }
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        log.info("configure .........................................");
-//        // inMemoryAuthentication -> 메모리상에 user정보를 임의로 등록
-//        auth.inMemoryAuthentication()
-//                .withUser("admin")
 
     /// /                .password("{noop}1234") // {noop} -> security는 기본적으로 비밀번호 암호화 필수 -> 예외
 //                .password("$2a$10$EsIMfxbJ6NuvwX7MDj4WqOYFzLU9U/lddCyn0nic5dFo3VfJYrXYC")
@@ -114,6 +114,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
+
+    // AuthenticationManager 빈 등록
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

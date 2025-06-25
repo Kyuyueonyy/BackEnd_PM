@@ -33,6 +33,18 @@ public class JwtProcessor {
                 .compact(); //문자열 생성
     }
 
+    //토큰 생성하기
+    //subject : 사용자 (username)
+    public String generateTokenByLogin(String subject) {
+        return Jwts.builder()
+                .setSubject(subject) //사용자 식별자
+                .setIssuedAt(new Date()) //발급시간
+                .setExpiration(new Date(new Date().getTime() + TOKEN_VALID_MILLISECOND)) //만료시간(현재시간에 토큰 만료시간(5분)을 넣어서)
+//                .claim("role", role) // 커스텀 claim 넣는 방법
+                .signWith(key) //서명
+                .compact(); //문자열 생성
+    }
+
     //검증
     //subject -> 사용자 식별자 (사용자 정보 중 고유한 값)
     public String getUserName(String token) {
