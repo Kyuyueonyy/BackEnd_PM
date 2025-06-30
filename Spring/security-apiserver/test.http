@@ -7,7 +7,7 @@ Content-Type: application/json
   "password": "1234"
 }
 
-### eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImlhdCI6MTc1MDgzMDY4MCwiZXhwIjoxNzUwODMwOTgwfQ.VEfxNlIADDGslf-kldgBHVuiQF-TZxnn4VxCRb26nso
+### eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImlhdCI6MTc1MDkxNDczNywiZXhwIjoxNzUwOTE1MDM3fQ.Zxj-f7YJN6TcSSkmpWkT8FH3T4jVbHSgfo1-dI6SpfU
 
 ### 실패로그인요청
 POST http://localhost:8080/api/auth/login
@@ -21,3 +21,27 @@ Content-Type: application/json
 ### 공개 엔드포인트 접근
 GET http://localhost:8080/api/security/all
 → 200 OK: "All can access everybody"
+
+### 보호된 엔드포인트 접근
+GET http://localhost:8080/api/security/member
+→ 401 Unauthorized: "Full authentication is required to access this resource"
+
+### 로그인 후 토큰 발급
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user0",
+  "password": "1234"
+}
+
+→ 200 OK: {"token": "eyJhbGciOiJIUzI1NiJ9...", "userInfo": {
+...
+}
+}
+
+### 헤더에 토큰 포함
+GET http://localhost:8080/api/security/member
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImlhdCI6MTc1MDgzMDY4MCwiZXhwIjoxNzUwODMwOTgwfQ.VEfxNlIADDGslf-kldgBHVuiQF-TZxnn4VxCRb26nso
+
+→ 200 OK: "user0"
