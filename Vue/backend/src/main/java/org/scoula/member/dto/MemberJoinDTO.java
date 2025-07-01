@@ -11,16 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//회원가입 요청에 대한 DTO
 public class MemberJoinDTO {
-    private String username;           // 사용자 ID
-    private String password;           // 비밀번호
-    private String email;              // 이메일
+    private String username;
+    private String password;
+    private String email;
 
-    private MultipartFile avatar;      // 아바타 이미지 파일
+    private MultipartFile avatar;
 
-    // MemberJoinDTO -> MemberVO 변환 메서드
-    // org.scoula.security.account.domain.MemberVO 클래스에 @Builder 추가
     public MemberVO toVO() {
         return MemberVO.builder()
                 .username(username)

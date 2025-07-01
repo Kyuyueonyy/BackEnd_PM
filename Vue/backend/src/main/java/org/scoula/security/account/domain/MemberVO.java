@@ -10,8 +10,8 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Data
+@Builder
 public class MemberVO {
     private String username;
     private String password;

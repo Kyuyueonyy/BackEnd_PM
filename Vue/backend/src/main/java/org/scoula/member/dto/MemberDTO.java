@@ -14,25 +14,34 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//응답 용도 (Password 없음)
 public class MemberDTO {
     private String username;
     private String email;
-    private Date regDate;              // 등록일
-    private Date updateDate;           // 수정일
-    private MultipartFile avatar;
-    private List<String> authList;     // 권한 목록 (join 처리 필요)
+    private Date regDate;
+    private Date updateDate;
 
-    // MemberVO -> MemberDTO 변환 (정적 팩토리 메서드)
+    private MultipartFile avatar;
+    private List<String> authList;
+
+    //dto --> vo
+
+    //vo --> dto
     public static MemberDTO of(MemberVO m) {
         return MemberDTO.builder()
                 .username(m.getUsername())
                 .email(m.getEmail())
                 .regDate(m.getRegDate())
                 .updateDate(m.getUpdateDate())
-                .authList(m.getAuthList().stream()
-                        .map(a -> a.getAuth())
-                        .toList())
+                .authList(m.getAuthList().stream().map(a -> a.getAuth()).toList())
+                .build();
+    }
+
+    public MemberVO toVO() {
+        return MemberVO.builder()
+                .username(username)
+                .email(email)
+                .regDate(regDate)
+                .updateDate(updateDate)
                 .build();
     }
 }

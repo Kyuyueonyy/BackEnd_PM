@@ -122,9 +122,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-                // 일단 모든 접근 허용
+                // 일단 모든 접근
+                .antMatchers(HttpMethod.POST, "/api/member").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/member", "/api/member/*/changepassword").authenticated()
                 .anyRequest().permitAll();
-        
+
         // 경로별 접근권한설정
         // form-login기본 설정은 비활성화되어서 사라짐.
         // 권한이 없으면 403에러 화면이 뜸.
@@ -144,21 +146,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/security/member").access("hasRole('ROLE_MEMBER')")    // ROLE_MEMBER 이상 접근 허용
 //                .antMatchers("/api/security/admin").access("hasRole('ROLE_ADMIN')")      // ROLE_ADMIN 이상 접근 허용
 //                .anyRequest().authenticated();  // 나머지는 로그인 된 경우 모두 허용
-
-        http.formLogin()
-                .loginPage("/security/login")
-                .loginProcessingUrl("/security/login")
-                .defaultSuccessUrl("/");
-
-        http.logout()
-                .logoutUrl("/security/logout")
-                .invalidateHttpSession(true)
-                // 로그아웃설정시작
-                // POST: 로그아웃 호출 url
-                // 세션 invalidate
-                .deleteCookies("remember-me", "JSESSION-ID") // 삭제할 쿠키 목록
-                .logoutSuccessUrl("/security/logout");
-        // GET: 로그아웃 이후이동할페이지
+        
     }
 
     @Override

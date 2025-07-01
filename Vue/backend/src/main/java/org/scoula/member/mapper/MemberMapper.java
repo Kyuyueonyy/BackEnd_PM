@@ -1,14 +1,24 @@
 package org.scoula.member.mapper;
 
+import org.scoula.member.dto.ChangePasswordDTO;
 import org.scoula.security.account.domain.AuthVO;
 import org.scoula.security.account.domain.MemberVO;
 
 public interface MemberMapper {
-    MemberVO get(String username);                    // 회원 조회 (권한 포함)
+    //회원검색
+    //id중복체크
+    //회원가입
+    //권한(role)을 추가
 
-    MemberVO findByUsername(String username);         // ID 중복 체크용 조회
+    MemberVO get(String username);
 
-    int insert(MemberVO member);                      // 회원정보 저장
+    MemberVO findByUsername(String username); // id 중복 체크시 사용
 
-    int insertAuth(AuthVO auth);                      // 권한정보 저장
+    int insert(MemberVO member); // 회원 정보 추가
+
+    int insertAuth(AuthVO auth); // 회원 권한 정보 추가
+
+    int update(MemberVO member);
+
+    int updatePassword(ChangePasswordDTO changePasswordDTO);
 }

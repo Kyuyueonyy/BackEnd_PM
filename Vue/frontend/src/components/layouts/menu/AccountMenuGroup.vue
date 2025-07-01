@@ -5,6 +5,13 @@ import AccountMenuItem from './AccountMenuItem.vue';
 import LogoutMenuItem from './LogoutMenuItem.vue';
 import config from '@/config';
 
+import { useAuthStore } from '@/stores/auth.js';
+
+const auth = useAuthStore();
+
+const islogin = computed(() => auth.isLogin);
+const username = computed(() => auth.username);
+
 const { login, join } = config.accoutMenus;
 </script>
 
